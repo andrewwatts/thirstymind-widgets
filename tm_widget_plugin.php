@@ -8,8 +8,13 @@ Author: Andrew Watts
 Author URI: http://www.thirstymind.org
 */
 
-    if ( !function_exists('fetch_rss') ) :
+
+    require_once( ABSPATH . WPINC . '/rss.php');  
     
+/*     if ( !function_exists('fetch_rss') ) : */
+
+
+
     /**
      * Build Magpie object based on RSS from URL. We are using a custom
      * function to handle the cache age the way we want, ie: the cache
@@ -22,6 +27,7 @@ Author URI: http://www.thirstymind.org
      * @param string $url URL to retrieve feed
      * @return bool|MagpieRSS false on failure or MagpieRSS object on success.
      */
+     
     function fetch_rss ($url, $cache_age) {
     	// initialize constants
     	init();
@@ -59,7 +65,6 @@ Author URI: http://www.thirstymind.org
     			debug($cache->ERROR, E_USER_WARNING);
     		}
     
-    
     		$cache_status 	 = 0;		// response of check_cache
     		$request_headers = array(); // HTTP headers to send with fetch
     		$rss 			 = 0;		// parsed RSS object
@@ -73,15 +78,18 @@ Author URI: http://www.thirstymind.org
     		// if object cached, and cache is fresh, return cached obj
     		if ( $cache_status == 'HIT' ) {
     			$rss = $cache->get( $url );
+    			
     			if ( isset($rss) and $rss ) {
-    				$rss->from_cache = 1;
+    			
+                    $rss->from_cache = 1;
     				if ( MAGPIE_DEBUG > 1) {
-    				debug("MagpieRSS: Cache HIT", E_USER_NOTICE);
-    			}
+    				    debug("MagpieRSS: Cache HIT", E_USER_NOTICE);
+                    }
+                    
     				return $rss;
     			}
     		}
-    
+
     		// else attempt a conditional get
     
     		// setup headers
@@ -92,6 +100,8 @@ Author URI: http://www.thirstymind.org
     				$request_headers['If-Last-Modified'] = $rss->last_modified;
     			}
     		}
+    		
+
     
     		$resp = _fetch_remote_file( $url, $request_headers );
     
@@ -150,12 +160,15 @@ Author URI: http://www.thirstymind.org
     
     	} // end if ( !MAGPIE_CACHE_ON ) {
     } // end fetch_rss()
-    endif;
+/*     endif; */
+
+
+
 
 
     /**
-     * The about widget 
-     */
+     * TODO: make this method dynamic and user_description
+     */ 
     function tm_widget_about($args) {
 	    extract($args);
 ?>
@@ -168,8 +181,8 @@ Author URI: http://www.thirstymind.org
             the personal site of Andrew Watts, where I share my thoughts on software, technology &amp; life.</p>  
             
             <ul>
-                <li><a href="<?php echo get_page_uri(133) ?>" alt="About Andrew Watts" title="About Andrew Watts">More &raquo;</a></li>
-                <li><a href="<?php echo get_page_uri(488) ?>" alt="Andrew Watts' Projects" title="Andrew Watts' Projects">Projects &raquo;</a></li>                                
+                <li><a href="about" alt="About Andrew Watts" title="About Andrew Watts">More &raquo;</a></li>
+                <li><a href="projects" alt="Andrew Watts' Projects" title="Andrew Watts' Projects">Projects &raquo;</a></li>                                
             </ul>
 		<?php echo $after_widget; ?>
 <?php
@@ -480,7 +493,6 @@ Author URI: http://www.thirstymind.org
 
 
     function tm_widget_twitter( $args ){
-        require_once(ABSPATH . WPINC . '/rss-tm.php');
     
         extract( $args );
         
@@ -523,8 +535,6 @@ Author URI: http://www.thirstymind.org
 
     function tm_widget_twitter_control(){
     
-        echo dirname(__FILE__);
-    
         $options = $newoptions = get_option( 'tm_widget_twitter' );
         
         if ( $_POST['tm_widget_twitter-submit'] ) {
@@ -558,7 +568,6 @@ Author URI: http://www.thirstymind.org
     
     
     function tm_widget_lastfm( $args ){
-        require_once(ABSPATH . WPINC . '/rss-tm.php');
     
         extract( $args );
         
